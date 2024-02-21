@@ -29,12 +29,12 @@ public struct CodingKeysMacro: MemberMacro {
             throw CodingKeysError.invalidDeclarationSyntax
         }
         
-        let attributeSyntax = declaration.attributes?.first?.as(AttributeSyntax.self)
-        let tupleSyntax = attributeSyntax?.argument?.as(TupleExprElementListSyntax.self)
+        let attributeSyntax = declaration.attributes.first?.as(AttributeSyntax.self)
+        let tupleSyntax = attributeSyntax?.arguments?.as(LabeledExprListSyntax.self)
         let content = tupleSyntax?.first?.expression.as(DictionaryExprSyntax.self)
         let dictionaryList = content?.content.as(DictionaryElementListSyntax.self)
-        let valueExpression = dictionaryList?.compactMap({$0.valueExpression.as(StringLiteralExprSyntax.self)})
-        let keyPathExpression = dictionaryList?.compactMap({$0.keyExpression.as(KeyPathExprSyntax.self)})
+        let valueExpression = dictionaryList?.compactMap({$0.value.as(StringLiteralExprSyntax.self)})
+        let keyPathExpression = dictionaryList?.compactMap({$0.key.as(KeyPathExprSyntax.self)})
         
         guard let keyPathSyntax = keyPathExpression?.compactMap({ $0.components }),
               let stringSegmentSyntax = valueExpression?.compactMap({$0.segments.first?.as(StringSegmentSyntax.self)})

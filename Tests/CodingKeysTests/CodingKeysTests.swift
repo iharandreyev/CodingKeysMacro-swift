@@ -1,60 +1,19 @@
-import SwiftSyntaxMacros
-import SwiftSyntaxMacrosTestSupport
-import XCTest
-import MacroLibraryMacros
-import XCTest
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
+import SwiftSyntaxMacroExpansion
+import SwiftSyntaxMacrosTestSupport
 
-final class MacroLibraryTests: XCTestCase {
+import XCTest
+
+import CodingKeysMacros
+
+final class CodingKeysTests: XCTestCase {
     let testMacros: [String: Macro.Type] = [
         "CodingKeysMacro": CodingKeysMacro.self
     ]
 
-    func testApiObjects() throws {
-
-        let sf: SourceFileSyntax = """
-        @Init
-        public struct Something: Codable {
-            let foo: String
-            let bar: Int
-            let hello: Bool?
-        }
-        """
-        
-        let expectation = """
-        
-        public struct Something: Codable {
-            let foo: String
-            let bar: Int
-            let hello: Bool?
-            public init(
-                foo: String,
-            bar: Int,
-            hello: Bool?
-            ) {
-                self.foo = foo
-            self.bar = bar
-            self.hello = hello
-            }
-        }
-        """
-
-        let context = BasicMacroExpansionContext(
-            sourceFiles: [
-                sf: .init(
-                    moduleName: "TestModule",
-                    fullFilePath: "test.swift"
-                )
-            ]
-        )
-
-        let transformed = sf.expand(macros: testMacros, in: context)
-        XCTAssertEqual(transformed.formatted().description, expectation)
-    }
-    
-    func testApiObjects1() throws {
+    func testCodingKeysWithPartialKeyPaths() throws {
 
         let sf: SourceFileSyntax = #"""
         @CodingKeysMacro([
@@ -75,10 +34,11 @@ final class MacroLibraryTests: XCTestCase {
             let foo: String
             let bar: Int
             let newUser: String
+        
             enum CodingKeys: String, CodingKey {
                 case foo = "fo_o"
-            case bar = "Value"
-            case newUser = "new_user"
+                case bar = "Value"
+                case newUser = "new_user"
             }
         }
         """
@@ -113,10 +73,11 @@ final class MacroLibraryTests: XCTestCase {
             let foo: String
             let bar: Int
             let newUser: String
-            enum CodingKeys: String, CodingKey {
+        
+            enum CodingKeys: String, CodingKey, CaseIterable {
                 case foo
-            case bar
-            case newUser
+                case bar
+                case newUser
             }
         }
         """

@@ -9,6 +9,6 @@
 /// - Note: This macro requires the external macro provided by "MacroLibraryMacros".
 @attached(member, names: arbitrary)
 public macro CodingKeysMacro<T>(_ : [PartialKeyPath<T>: String] = [:]) = #externalMacro(
-    module: "MacroLibraryMacros",
+    module: "CodingKeysMacros",
     type: "CodingKeysMacro"
 )
