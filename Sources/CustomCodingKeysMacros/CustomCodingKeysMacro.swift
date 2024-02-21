@@ -1,10 +1,9 @@
-import SwiftCompilerPlugin
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
 /// A struct that defines a macro for automatically generating CodingKeys
-public struct CodingKeysMacro: MemberMacro {
+public struct CustomCodingKeysMacro: MemberMacro {
     
     /// Defines the types of errors that can occur in CodingKeysMacro
     private enum CodingKeysError: Error {
@@ -29,12 +28,12 @@ public struct CodingKeysMacro: MemberMacro {
             throw CodingKeysError.invalidDeclarationSyntax
         }
         
-        let attributeSyntax = declaration.attributes?.first?.as(AttributeSyntax.self)
-        let tupleSyntax = attributeSyntax?.argument?.as(TupleExprElementListSyntax.self)
+        let attributeSyntax = declaration.attributes.first?.as(AttributeSyntax.self)
+        let tupleSyntax = attributeSyntax?.arguments?.as(LabeledExprListSyntax.self)
         let content = tupleSyntax?.first?.expression.as(DictionaryExprSyntax.self)
         let dictionaryList = content?.content.as(DictionaryElementListSyntax.self)
-        let valueExpression = dictionaryList?.compactMap({$0.valueExpression.as(StringLiteralExprSyntax.self)})
-        let keyPathExpression = dictionaryList?.compactMap({$0.keyExpression.as(KeyPathExprSyntax.self)})
+        let valueExpression = dictionaryList?.compactMap({$0.value.as(StringLiteralExprSyntax.self)})
+        let keyPathExpression = dictionaryList?.compactMap({$0.key.as(KeyPathExprSyntax.self)})
         
         guard let keyPathSyntax = keyPathExpression?.compactMap({ $0.components }),
               let stringSegmentSyntax = valueExpression?.compactMap({$0.segments.first?.as(StringSegmentSyntax.self)})
@@ -101,14 +100,4 @@ public struct CodingKeysMacro: MemberMacro {
             """
         ]
     }
-}
-
-/// A struct that defines a compiler plugin.
-/// The plugin provides macros.
-@main
-struct MacroLibraryPlugin: CompilerPlugin {
-    /// An array of Macro types provided by the plugin.
-    let providingMacros: [Macro.Type] = [
-        CodingKeysMacro.self
-    ]
 }
