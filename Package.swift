@@ -5,29 +5,29 @@ import PackageDescription
 import CompilerPluginSupport
 
 let package = Package(
-    name: "MacroLibrary",
+    name: "CustomCodingKeys",
     platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6), .macCatalyst(.v13)],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "MacroLibrary",
-            targets: ["MacroLibrary"]
+            name: "CustomCodingKeys",
+            targets: ["CustomCodingKeys"]
         ),
         .executable(
-            name: "MacroLibraryClient",
-            targets: ["MacroLibraryClient"]
+            name: "CustomCodingKeysClient",
+            targets: ["CustomCodingKeysClient"]
         ),
     ],
     dependencies: [
-        // Depend on the latest Swift 5.9 prerelease of SwiftSyntax
-        .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0-swift-5.9-DEVELOPMENT-SNAPSHOT-2023-04-25-b"),
+        // Depend on the Swift 5.9 release of SwiftSyntax
+        .package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         // Macro implementation that performs the source transformation of a macro.
         .macro(
-            name: "MacroLibraryMacros",
+            name: "CustomCodingKeysMacros",
             dependencies: [
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
@@ -35,16 +35,16 @@ let package = Package(
         ),
 
         // Library that exposes a macro as part of its API, which is used in client programs.
-        .target(name: "MacroLibrary", dependencies: ["MacroLibraryMacros"]),
+        .target(name: "CustomCodingKeys", dependencies: ["CustomCodingKeysMacros"]),
 
         // A client of the library, which is able to use the macro in its own code.
-        .executableTarget(name: "MacroLibraryClient", dependencies: ["MacroLibrary"]),
+        .executableTarget(name: "CustomCodingKeysClient", dependencies: ["CustomCodingKeys"]),
 
         // A test target used to develop the macro implementation.
         .testTarget(
-            name: "MacroLibraryTests",
+            name: "CustomCodingKeysTests",
             dependencies: [
-                "MacroLibraryMacros",
+                "CustomCodingKeysMacros",
                 .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
             ]
         ),
