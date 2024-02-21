@@ -1,7 +1,7 @@
 import CustomCodingKeys
 
 @customCodingKeys([
-    \Address.buildingNumber: "building_number"
+    "buildingNumber": "building_number"
 ])
 public struct Address: Codable {
     var buildingNumber: String?

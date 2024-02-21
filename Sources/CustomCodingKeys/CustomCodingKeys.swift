@@ -8,7 +8,7 @@
 /// The default value of this parameter is an empty dictionary.
 /// - Note: This macro requires the external macro provided by "CustomCodingKeysMacros".
 @attached(member, names: arbitrary)
-public macro customCodingKeys<T>(_ : [PartialKeyPath<T>: String] = [:]) = #externalMacro(
+public macro customCodingKeys(_ : [String: String] = [:]) = #externalMacro(
     module: "CustomCodingKeysMacros",
     type: "CustomCodingKeysMacro"
 )
