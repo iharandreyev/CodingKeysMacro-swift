@@ -25,10 +25,9 @@ Using this library is super simple. Here's an example:
 
 ```swift
 
-@CodingKeysMacro<Address>([
-    \.buildingNumber: "building_number"
+@customCodingKeys<Address>([
+    "buildingNumber": "building_number"
 ])
-
 struct Address: Codable {
     var buildingNumber: String?
     let city: String?
@@ -42,7 +41,7 @@ struct Address: Codable {
 
 ```
 
-Just apply the `@CodingKeysMacro<Type>` annotation to your Codable struct and the library will take care of the rest. It will generate the `CodingKeys` enumeration for your Codable struct.
+Just apply the `@customCodingKeys<Type>` annotation to your Codable struct and the library will take care of the rest. It will generate the `CodingKeys` enumeration for your Codable struct.
 
 The example above will generate the following `CodingKeys`:
 
