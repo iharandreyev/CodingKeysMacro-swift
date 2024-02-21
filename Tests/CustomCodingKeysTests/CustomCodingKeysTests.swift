@@ -1,63 +1,24 @@
+import SwiftSyntax
 import SwiftSyntaxMacros
+import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacrosTestSupport
 import XCTest
-import MacroLibraryMacros
-import XCTest
-import SwiftSyntax
-import SwiftSyntaxBuilder
-import SwiftSyntaxMacros
 
-final class MacroLibraryTests: XCTestCase {
-    let testMacros: [String: Macro.Type] = [
-        "CodingKeysMacro": CodingKeysMacro.self
-    ]
+// Macro implementations build for the host, so the corresponding module is not available when cross-compiling. Cross-compiled tests may still make use of the macro itself in end-to-end tests.
+#if canImport(CustomCodingKeysMacros)
+import CustomCodingKeysMacros
 
-    func testApiObjects() throws {
+let testMacros: [String: Macro.Type] = [
+    "customCodingKeys": CustomCodingKeysMacro.self
+]
+#endif
 
-        let sf: SourceFileSyntax = """
-        @Init
-        public struct Something: Codable {
-            let foo: String
-            let bar: Int
-            let hello: Bool?
-        }
-        """
-        
-        let expectation = """
-        
-        public struct Something: Codable {
-            let foo: String
-            let bar: Int
-            let hello: Bool?
-            public init(
-                foo: String,
-            bar: Int,
-            hello: Bool?
-            ) {
-                self.foo = foo
-            self.bar = bar
-            self.hello = hello
-            }
-        }
-        """
-
-        let context = BasicMacroExpansionContext(
-            sourceFiles: [
-                sf: .init(
-                    moduleName: "TestModule",
-                    fullFilePath: "test.swift"
-                )
-            ]
-        )
-
-        let transformed = sf.expand(macros: testMacros, in: context)
-        XCTAssertEqual(transformed.formatted().description, expectation)
-    }
+final class CustomCodingKeysTests: XCTestCase {
     
-    func testApiObjects1() throws {
-
+    func testCodingKeysWithPartialKeyPaths() throws {
+#if canImport(CustomCodingKeysMacros)
         let sf: SourceFileSyntax = #"""
-        @CodingKeysMacro([
+        @customCodingKeys([
         \Something.newUser: "new_user",
         \Something.bar: "Value",
         \Something.foo: "fo_o"
@@ -75,10 +36,11 @@ final class MacroLibraryTests: XCTestCase {
             let foo: String
             let bar: Int
             let newUser: String
+        
             enum CodingKeys: String, CodingKey {
                 case foo = "fo_o"
-            case bar = "Value"
-            case newUser = "new_user"
+                case bar = "Value"
+                case newUser = "new_user"
             }
         }
         """
@@ -94,12 +56,15 @@ final class MacroLibraryTests: XCTestCase {
 
         let transformed = sf.expand(macros: testMacros, in: context)
         XCTAssertEqual(transformed.formatted().description, expectation)
+#else
+throw XCTSkip("macros are only supported when running tests for the host platform")
+#endif
     }
     
     func testCodingKeysWithoutPartialKeyPaths() throws {
-
+#if canImport(CustomCodingKeysMacros)
         let sf: SourceFileSyntax = #"""
-        @CodingKeysMacro()
+        @customCodingKeys()
         public struct Something: Codable {
             let foo: String
             let bar: Int
@@ -113,10 +78,11 @@ final class MacroLibraryTests: XCTestCase {
             let foo: String
             let bar: Int
             let newUser: String
+        
             enum CodingKeys: String, CodingKey {
                 case foo
-            case bar
-            case newUser
+                case bar
+                case newUser
             }
         }
         """
@@ -132,5 +98,8 @@ final class MacroLibraryTests: XCTestCase {
 
         let transformed = sf.expand(macros: testMacros, in: context)
         XCTAssertEqual(transformed.formatted().description, expectation)
+#else
+throw XCTSkip("macros are only supported when running tests for the host platform")
+#endif
     }
 }
