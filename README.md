@@ -1,14 +1,14 @@
-# CodingKeysMacro-swift
+# CustomCodingKeys-swift
 
-CodingKeysMacro-swift is an incredibly powerful Swift Compiler Plugin that introduces an automated way to generate `CodingKeys` for Codable structs in Swift. This eliminates the need for manually declaring `CodingKeys` enumeration for every Codable struct, saving you valuable time and reducing the possibility of human errors.
+CustomCodingKeys-swift is an incredibly powerful Swift Compiler Plugin that introduces an automated way to generate `CodingKeys` for Codable structs in Swift. This eliminates the need for manually declaring `CodingKeys` enumeration for every Codable struct, saving you valuable time and reducing the possibility of human errors.
 
 ## Installation
 
 ### Swift Package Manager
 
-`.package(url: "https://github.com/sasha-riabchuk/CodingKeysMacro-swift", from: "1.0.0")`
+`.package(url: "https://github.com/iharandreyev/CodingKeysMacro-swift", from: "1.0.2")`
 
-## Why CodingKeysMacro-swift is Super
+## Why CustomCodingKeys-swift is Super
 
 1\. **Automation**: No need to manually write `CodingKeys` for each property. This library does that for you!
 
@@ -24,6 +24,9 @@ CodingKeysMacro-swift is an incredibly powerful Swift Compiler Plugin that intro
 Using this library is super simple. Here's an example:
 
 ```swift
+
+import CustomCodingKeysMacros
+import CustomCodingKeys
 
 @customCodingKeys<Address>([
     "buildingNumber": "building_number"
